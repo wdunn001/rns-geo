@@ -10,6 +10,11 @@ MANIFEST = {
     "service": {
         "name": "rns-geo",
         "summary": "Geolocation data over Reticulum",
+        "description": ("Geocoding, routing, snap-to-road and nearby-POI lookups over "
+                        "an authenticated Reticulum Link. Responses are trimmed compact "
+                        "enough for LoRa. Backed by OSRM, Nominatim and Overpass. Map "
+                        "tiles are not served over the mesh (too heavy); this is data "
+                        "only. Coordinates are decimal degrees (WGS84)."),
         "app": "rnsgeo",
         "aspect": "query",
         "path": "q",
