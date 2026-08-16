@@ -67,6 +67,58 @@ def route(frm, to, geom=False):
     return out
 
 
+def _instruction(step):
+    """Synthesize a readable maneuver from an OSRM step (OSRM gives no text)."""
+    m = step.get("maneuver", {}) or {}
+    typ = (m.get("type") or "").lower()
+    mod = (m.get("modifier") or "").lower()
+    name = (step.get("name") or "").strip()
+    if typ == "arrive":
+        return "Arrive at your destination"
+    if typ == "depart":
+        base = "Head " + (mod if mod else "out")
+    elif typ == "turn":
+        base = ("Turn " + mod).rstrip() if mod else "Turn"
+    elif typ in ("new name", "continue"):
+        base = "Continue" + (" " + mod if mod and mod != "straight" else " straight")
+    elif typ == "merge":
+        base = ("Merge " + mod).rstrip()
+    elif typ == "on ramp":
+        base = ("Take the ramp " + mod).rstrip()
+    elif typ == "off ramp":
+        base = ("Take the exit " + mod).rstrip()
+    elif typ == "fork":
+        base = ("Keep " + mod).rstrip() if mod else "Keep going"
+    elif typ in ("roundabout", "rotary"):
+        ex = m.get("exit")
+        return ("At the roundabout, take exit " + str(ex)) if ex else "Enter the roundabout"
+    elif typ == "end of road":
+        base = ("Turn " + mod).rstrip() if mod else "Continue"
+    else:
+        base = (typ + " " + mod).strip().capitalize() or "Continue"
+    if name:
+        base += " onto " + name
+    return base
+
+
+def directions(frm, to):
+    """Turn-by-turn A->B. Returns {dist_m, dur_s, steps:[{text, dist_m}]} or None."""
+    coords = f"{frm[1]},{frm[0]};{to[1]},{to[0]}"   # OSRM wants lon,lat
+    params = {"overview": "false", "steps": "true", "annotations": "false",
+              "geometries": "polyline"}
+    d = _get(f"{OSRM}/route/v1/driving/{coords}?{urllib.parse.urlencode(params)}")
+    if d.get("code") != "Ok" or not d.get("routes"):
+        return None
+    r = d["routes"][0]
+    steps = []
+    for leg in r.get("legs", []):
+        for st in leg.get("steps", []):
+            txt = _instruction(st)
+            if txt:
+                steps.append({"text": txt, "dist_m": round(st.get("distance", 0))})
+    return {"dist_m": round(r["distance"]), "dur_s": round(r["duration"]), "steps": steps}
+
+
 def nearest(lat, lon):
     """snap a coord to the nearest routable point (OSRM /nearest)."""
     d = _get(f"{OSRM}/nearest/v1/driving/{lon},{lat}?number=1")

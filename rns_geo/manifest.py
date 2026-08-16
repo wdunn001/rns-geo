@@ -52,5 +52,13 @@ MANIFEST = {
              "cat": {"type": "str?", "desc": "filter, e.g. amenity=cafe (optional)"},
              "limit": {"type": "int<=30", "desc": "max results (max 30)"}},
          "response": "[{name,lat,lon,cat}]"},
+        {"op": "dir", "summary": "Turn-by-turn driving directions", "auth": "none",
+         "request": {
+             "q_from": {"type": "str?", "desc": "start place/address text (geocoded); or use frm"},
+             "q_to": {"type": "str?", "desc": "destination place/address text (geocoded); or use to"},
+             "frm": {"type": "[lat,lon]?", "desc": "start coordinate (instead of q_from)"},
+             "to": {"type": "[lat,lon]?", "desc": "destination coordinate (instead of q_to)"}},
+         "response": {"dist_m": "int", "dur_s": "int", "from_label": "str?",
+                      "to_label": "str?", "steps": "[{text,dist_m}]"}},
     ],
 }

@@ -80,6 +80,31 @@ def _dispatch(req):
             r = backends.poi(req["lat"], req["lon"], req.get("radius", 1000),
                              req.get("cat"), req.get("limit", 20))
             return protocol.ok({"res": r}, req)
+        if op == protocol.OP_DIR:
+            # accept coords (frm/to) OR place text (q_from/q_to, geocoded here)
+            frm, to = req.get("frm"), req.get("to")
+            flabel = tlabel = None
+            if not frm and req.get("q_from"):
+                g = backends.forward(req["q_from"], 1)
+                if not g:
+                    return protocol.err("from_not_found", req)
+                frm, flabel = [g[0]["lat"], g[0]["lon"]], g[0].get("label")
+            if not to and req.get("q_to"):
+                g = backends.forward(req["q_to"], 1)
+                if not g:
+                    return protocol.err("to_not_found", req)
+                to, tlabel = [g[0]["lat"], g[0]["lon"]], g[0].get("label")
+            if not frm or not to:
+                return protocol.err("missing_field", req, "frm/to or q_from/q_to")
+            r = backends.directions(frm, to)
+            if not r:
+                return protocol.err("no_route", req)
+            r["from"], r["to"] = frm, to
+            if flabel:
+                r["from_label"] = flabel
+            if tlabel:
+                r["to_label"] = tlabel
+            return protocol.ok({"res": r}, req)
     except KeyError as e:
         return protocol.err("missing_field", req, str(e))
     except Exception as e:
