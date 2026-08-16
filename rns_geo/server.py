@@ -80,6 +80,9 @@ def _dispatch(req):
             r = backends.poi(req["lat"], req["lon"], req.get("radius", 1000),
                              req.get("cat"), req.get("limit", 20))
             return protocol.ok({"res": r}, req)
+        if op == protocol.OP_PLACE:
+            r = backends.place(req["q"])
+            return protocol.ok({"res": r}, req) if r else protocol.err("not_found", req)
         if op == protocol.OP_DIR:
             # accept coords (frm/to) OR place text (q_from/q_to, geocoded here)
             frm, to = req.get("frm"), req.get("to")

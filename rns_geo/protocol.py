@@ -25,7 +25,8 @@ OP_ROUTE   = "route"  # {frm:[lat,lon], to:[lat,lon], geom?} -> {dist_m, dur_s, 
 OP_NEAREST = "near"   # {lat, lon}                     -> {lat, lon, name?}
 OP_POI     = "poi"    # {lat, lon, radius?, cat?, limit?} -> [{name, lat, lon, cat}, ...]
 OP_DIR     = "dir"    # {frm|q_from, to|q_to} -> {from,to,dist_m,dur_s,steps:[{text,dist_m}]}
-OPS = frozenset((OP_REVERSE, OP_FORWARD, OP_ROUTE, OP_NEAREST, OP_POI, OP_DIR))
+OP_PLACE   = "place"  # {q} -> {lat,lon,label,name,cls,type,importance,contact?}
+OPS = frozenset((OP_REVERSE, OP_FORWARD, OP_ROUTE, OP_NEAREST, OP_POI, OP_DIR, OP_PLACE))
 
 # MeshAPI discovery op (github.com/wdunn001/meshapi) -- returns the manifest.
 MANIFEST_OP = "__manifest__"

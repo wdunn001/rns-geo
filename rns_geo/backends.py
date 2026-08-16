@@ -52,6 +52,42 @@ def forward(q, limit=1):
             for x in (arr or [])]
 
 
+def place(q):
+    """Best single place match enriched for a knowledge card: coords, label, class/
+    type/importance, and contact (phone/website/hours) from OSM extratags. None if
+    no match. Used to decide 'is this a place?' and to render POI contact info."""
+    qs = urllib.parse.urlencode({"q": q, "format": "jsonv2", "addressdetails": 1,
+                                 "extratags": 1, "limit": 8})
+    arr = _get(f"{NOMINATIM}/search?{qs}")
+    if not arr:
+        return None
+    # prefer the most prominent match (local Nominatim doesn't always order by
+    # importance, so a bare "Nashville" would otherwise return a tiny WI town).
+    x = max(arr, key=lambda r: r.get("importance") or 0)
+    ex = x.get("extratags") or {}
+    contact = {}
+    for k in ("phone", "contact:phone"):
+        if ex.get(k):
+            contact["phone"] = ex[k]
+            break
+    for k in ("website", "contact:website", "url"):
+        if ex.get(k):
+            contact["website"] = ex[k]
+            break
+    if ex.get("opening_hours"):
+        contact["hours"] = ex["opening_hours"]
+    addr = x.get("address") or {}
+    out = {"lat": float(x["lat"]), "lon": float(x["lon"]),
+           "label": x.get("display_name"), "name": x.get("name") or "",
+           "cls": x.get("category") or x.get("class"),   # jsonv2 renamed class->category
+           "type": x.get("type"), "addresstype": x.get("addresstype"),
+           "state": addr.get("state"), "country": addr.get("country"),
+           "importance": x.get("importance")}
+    if contact:
+        out["contact"] = contact
+    return out
+
+
 def route(frm, to, geom=False):
     """A->B -> {dist_m, dur_s}; encoded polyline only if geom=True (opt-in, fatter)."""
     coords = f"{frm[1]},{frm[0]};{to[1]},{to[0]}"  # OSRM wants lon,lat

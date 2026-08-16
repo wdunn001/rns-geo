@@ -52,6 +52,12 @@ MANIFEST = {
              "cat": {"type": "str?", "desc": "filter, e.g. amenity=cafe (optional)"},
              "limit": {"type": "int<=30", "desc": "max results (max 30)"}},
          "response": "[{name,lat,lon,cat}]"},
+        {"op": "place", "summary": "Best place match with contact info (for a place card)",
+         "auth": "none",
+         "request": {"q": {"type": "str!", "desc": "place/POI/address text"}},
+         "response": {"lat": "float", "lon": "float", "label": "str", "name": "str",
+                      "cls": "str", "type": "str", "importance": "float",
+                      "contact": "{phone?,website?,hours?}"}},
         {"op": "dir", "summary": "Turn-by-turn driving directions", "auth": "none",
          "request": {
              "q_from": {"type": "str?", "desc": "start place/address text (geocoded); or use frm"},
