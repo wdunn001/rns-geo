@@ -23,7 +23,7 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
 import RNS
 
-from . import backends, protocol
+from . import backends, manifest, protocol
 
 ANNOUNCE_INTERVAL = 900     # seconds
 HEALTH_INTERVAL = 60
@@ -94,10 +94,17 @@ def on_request(path, data, request_id, link_id, remote_identity, requested_at):
         req = protocol.unpack(data)
     except Exception:
         return protocol.pack(protocol.err("bad_encoding"))
-    if not isinstance(req, dict) or req.get("v") != protocol.VERSION:
-        return protocol.pack(protocol.err("bad_version", req if isinstance(req, dict) else None))
+    if not isinstance(req, dict):
+        return protocol.pack(protocol.err("bad_encoding"))
     if not _allow(link_id):
         return protocol.pack(protocol.err("rate_limited", req))
+    # MeshAPI discovery -- answered regardless of envelope version so clients can
+    # introspect before they know our 'v'.
+    if req.get("op") == protocol.MANIFEST_OP:
+        return protocol.pack({"v": protocol.VERSION, "ok": True,
+                              "manifest": manifest.MANIFEST})
+    if req.get("v") != protocol.VERSION:
+        return protocol.pack(protocol.err("bad_version", req))
     with _sem:
         resp = _dispatch(req)
     if not _health.get("ok"):

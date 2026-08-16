@@ -26,6 +26,9 @@ OP_NEAREST = "near"   # {lat, lon}                     -> {lat, lon, name?}
 OP_POI     = "poi"    # {lat, lon, radius?, cat?, limit?} -> [{name, lat, lon, cat}, ...]
 OPS = frozenset((OP_REVERSE, OP_FORWARD, OP_ROUTE, OP_NEAREST, OP_POI))
 
+# MeshAPI discovery op (github.com/wdunn001/meshapi) -- returns the manifest.
+MANIFEST_OP = "__manifest__"
+
 
 def pack(obj):
     return umsgpack.packb(obj)
