@@ -1,0 +1,22 @@
+services:
+  rns-geo:
+    build: .
+    image: rns-geo:local
+    container_name: rns-geo
+    restart: unless-stopped
+    # host networking lets the RNS instance reach a local rnsd (127.0.0.1:4343)
+    # and exposes /healthz on :8213. Drop it if you peer to a remote node only.
+    network_mode: host
+    environment:
+      PYTHONUNBUFFERED: "1"
+      HEALTHZ_PORT: "8213"
+      # point these at your own backends:
+      OSRM_URL: "http://127.0.0.1:5001"
+      NOMINATIM_URL: "http://127.0.0.1:8092"
+      OVERPASS_URL: "http://127.0.0.1:8095/api/interpreter"
+    volumes:
+      - rns_geo_data:/data                              # persists the RNS identity (stable dest hash)
+      - ./config/rns-config.example:/config/rns/config:ro
+
+volumes:
+  rns_geo_data:
