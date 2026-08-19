@@ -1,4 +1,4 @@
-"""rns-geo — a compact geolocation data service over Reticulum.
+"""rns-geo, a compact geolocation data service over Reticulum.
 
 Exposes the quasarke geo backends (OSRM routing, Nominatim geocoding, Overpass
 POI) as small request/response ops over an authenticated RNS Link, usable over
