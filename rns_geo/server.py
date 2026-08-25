@@ -223,7 +223,7 @@ def main():
             dest.announce()
             RNS.log(f"[rns-geo] announced (backends {_health['backends']})")
         else:
-            RNS.log(f"[rns-geo] NOT announcing -- backends unhealthy "
+            RNS.log(f"[rns-geo] NOT announcing, backends unhealthy "
                     f"({_health['backends']})", RNS.LOG_WARNING)
         time.sleep(ANNOUNCE_INTERVAL)
 
