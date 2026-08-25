@@ -1,6 +1,6 @@
 """HTTP calls to the geo backends, with request-shaping to keep responses tiny
 (LoRa-safe). Backend URLs come from env (OSRM_URL / NOMINATIM_URL / OVERPASS_URL)
-and default to localhost -- point them at your own OSRM/Nominatim/Overpass.
+and default to localhost. Point them at your own OSRM/Nominatim/Overpass.
 stdlib urllib only, no extra deps.
 
 Every function returns compact, already-trimmed data (strip polygons, address
@@ -203,7 +203,7 @@ def poi(lat, lon, radius=1000, cat=None, limit=20):
 
 
 def _reachable(url, timeout=4, data=None):
-    """True if the URL answers 2xx. Does NOT parse the body -- Nominatim /status
+    """True if the URL answers 2xx. Does NOT parse the body. Nominatim /status
     returns plain-text 'OK', not JSON, so json-parsing it would false-fail."""
     req = urllib.request.Request(url, data=data, headers={"User-Agent": UA})
     with urllib.request.urlopen(req, timeout=timeout) as r:

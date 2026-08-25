@@ -5,7 +5,7 @@ Design notes vs rns-time:
   * rns-time replies with a single tiny RNS.Packet. Geo answers are variable and
     can exceed one packet's MDU (a POI list, a route polyline), so we use RNS's
     request-handler API (destination.register_request_handler). RNS transparently
-    delivers small responses as a packet and large ones as a Resource -- no
+    delivers small responses as a packet and large ones as a Resource, with no
     manual chunking, and it still rides the same authenticated, encrypted Link.
   * Open-read (ALLOW_ALL): the point is to SHARE geo data with the mesh. The
     server identity still authenticates the server to clients (pinned dest hash).
@@ -126,7 +126,7 @@ def on_request(path, data, request_id, link_id, remote_identity, requested_at):
         return protocol.pack(protocol.err("bad_encoding"))
     if not _allow(link_id):
         return protocol.pack(protocol.err("rate_limited", req))
-    # MeshAPI discovery -- answered regardless of envelope version so clients can
+    # MeshAPI discovery, answered regardless of envelope version so clients can
     # introspect before they know our 'v'.
     if req.get("op") == protocol.MANIFEST_OP:
         return protocol.pack({"v": protocol.VERSION, "ok": True,

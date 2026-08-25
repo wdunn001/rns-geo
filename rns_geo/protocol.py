@@ -5,7 +5,7 @@ answers survive a LoRa hop. Versioned like rns-time so the server can reject
 mismatched clients.
 
 NOTE (same gotcha as rns-time): the top-level `umsgpack` module is NOT reliably
-importable just because RNS is installed -- RNS 1.4.2 vendors it under
+importable just because RNS is installed. RNS 1.4.2 vendors it under
 RNS.vendor.umsgpack. The Dockerfile therefore `pip install`s `umsgpack`
 explicitly; do not remove that.
 """
@@ -28,7 +28,7 @@ OP_DIR     = "dir"    # {frm|q_from, to|q_to} -> {from,to,dist_m,dur_s,steps:[{t
 OP_PLACE   = "place"  # {q} -> {lat,lon,label,name,cls,type,importance,contact?}
 OPS = frozenset((OP_REVERSE, OP_FORWARD, OP_ROUTE, OP_NEAREST, OP_POI, OP_DIR, OP_PLACE))
 
-# MeshAPI discovery op (github.com/wdunn001/meshapi) -- returns the manifest.
+# MeshAPI discovery op (github.com/wdunn001/meshapi). Returns the manifest.
 MANIFEST_OP = "__manifest__"
 
 

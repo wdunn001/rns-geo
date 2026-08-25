@@ -1,4 +1,4 @@
-"""MeshAPI 0.1 manifest for rns-geo -- the single source of truth for this
+"""MeshAPI 0.1 manifest for rns-geo, the single source of truth for this
 service's ops. Served over RNS via the __manifest__ discovery op and rendered
 into the NomadNet explorer page. Plain dict (conforms to MeshAPI 0.1; no meshapi
 runtime dependency needed just to serve it). See github.com/wdunn001/meshapi.

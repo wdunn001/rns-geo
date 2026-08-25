@@ -4,7 +4,7 @@
 # Copy to a config dir (e.g. ./config) as the file named `config`, then run the
 # server with  --config /path/to/that/dir.
 #
-# NOTE: interface_enabled = True is REQUIRED on every interface block -- RNS
+# NOTE: interface_enabled = True is REQUIRED on every interface block. RNS
 # silently skips any block without it.
 
 [reticulum]
